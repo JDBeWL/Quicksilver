@@ -147,7 +147,13 @@
 
   /* 选中文本样式 */
   ::selection {
-    @apply bg-primary/20 text-foreground;
+    @apply bg-primary/30 text-foreground;
+  }
+
+  /* 代码块内选中文本样式 */
+  pre ::selection,
+  code ::selection {
+    @apply bg-primary/40 text-white;
   }
 }
 

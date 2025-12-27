@@ -86,6 +86,20 @@ next-env.d.ts
 /src/generated/prisma
 
 # ===================
+# Content (temporary)
+# ===================
+content/posts/*
+content/pages/*
+!content/posts/.gitkeep
+!content/pages/.gitkeep
+
+# ===================
+# Public data (generated)
+# ===================
+apps/blog/public/data/*
+!apps/blog/public/data/.gitkeep
+
+# ===================
 # Misc
 # ===================
 *.pem

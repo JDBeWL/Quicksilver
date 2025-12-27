@@ -1,6 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 import { PluginProvider } from "../../lib/plugins";
 import { PluginSlot } from "../../components/PluginSlot";
 import { i18n, type Locale } from "../../i18n-config";
@@ -32,10 +33,11 @@ export default async function LocaleLayout({
             <LanguageProviderWrapper initialLanguage={lang}>
                 <PluginProvider>
                     <Navbar lang={lang as Locale} />
-                    <main className="container mx-auto flex-1 flex flex-col">
+                    <main className="flex-1">
                         {children}
                     </main>
                     <PluginSlot name="footer-main" />
+                    <Footer lang={lang as Locale} />
                     <LanguageDetectionToastContainer />
                 </PluginProvider>
             </LanguageProviderWrapper>

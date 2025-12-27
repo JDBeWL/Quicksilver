@@ -7,4 +7,4 @@ author: Mer6ury
 
 # Welcome to my blog!
 
-芝士关于页面，具体文件在`content/pages/about.md`.
+这是新的博客页面用于替换旧的不好用的blog

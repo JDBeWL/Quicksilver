@@ -80,56 +80,35 @@ export function LanguageSwitcher({
       <div className={`relative ${className}`} ref={dropdownRef}>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-400 dark:focus:ring-slate-500 transition-colors duration-200"
+          className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/50 transition-colors"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
         >
           <Globe className="w-4 h-4" />
-          <span className="flex items-center space-x-1">
-            <span>{currentLanguage.flag}</span>
-            <span className="hidden md:inline">{currentLanguage.name}</span>
-          </span>
-          <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+          <span>{currentLanguage.flag}</span>
+          <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
         </button>
         
         {isOpen && (
           <ul
-            className="absolute right-0 z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg overflow-hidden"
+            className="absolute right-0 z-50 mt-2 min-w-[140px] bg-card border border-border/50 rounded-lg shadow-lg overflow-hidden"
             role="listbox"
           >
             {SUPPORTED_LANGUAGES.map((language) => (
               <li key={language.code} role="option">
                 <button
                   onClick={() => handleLanguageChange(language.code as Locale)}
-                  className={`flex items-center space-x-2 w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-700 ${
+                  className={`flex items-center gap-3 w-full px-4 py-2.5 text-left text-sm transition-colors ${
                     language.code === state.currentLanguage 
-                      ? 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium' 
-                      : 'text-gray-700 dark:text-gray-200'
+                      ? 'bg-primary/10 text-primary font-medium' 
+                      : 'text-foreground hover:bg-muted/50'
                   }`}
                 >
                   <span>{language.flag}</span>
                   <span>{language.name}</span>
-                  {language.code === state.currentLanguage && (
-                    <svg className="w-4 h-4 ml-auto text-slate-600 dark:text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
                 </button>
               </li>
             ))}
-            
-            {state.locationInfo && (
-              <div className="border-t border-gray-200 dark:border-gray-600 px-3 py-2 text-xs text-gray-500 dark:text-gray-400">
-                <div>检测位置: {state.locationInfo.country}</div>
-                {state.languageDetectionSource && (
-                  <div>检测来源: {
-                    state.languageDetectionSource === 'browser' ? '浏览器设置' :
-                    state.languageDetectionSource === 'location' ? '地理位置' :
-                    '默认设置'
-                  }</div>
-                )}
-              </div>
-            )}
           </ul>
         )}
       </div>

@@ -2,10 +2,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import 'highlight.js/styles/github-dark.css';
 import { MDXContent } from '../../../../components/mdx-content';
-import { formatDistance } from 'date-fns';
-import { Avatar, AvatarFallback } from '../../../../components/ui/avatar';
+import { formatDistance, format } from 'date-fns';
 import { Button } from '../../../../components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Clock } from 'lucide-react';
 import { Locale } from '../../../../i18n-config';
 import { getDictionary } from '../../../../get-dictionary';
 import { PluginSlot } from '../../../../components/PluginSlot';
@@ -15,7 +14,7 @@ export const dynamicParams = false;
 
 export async function generateStaticParams() {
     const posts = getAllPosts();
-    const langs: Locale[] = ['en', 'zh']; // Supported locales
+    const langs: Locale[] = ['en', 'zh'];
 
     return langs.flatMap((lang) =>
         posts.map((post: any) => ({
@@ -23,6 +22,14 @@ export async function generateStaticParams() {
             slug: post.slug,
         }))
     );
+}
+
+// 估算阅读时间
+function getReadingTime(content: string, lang: string): string {
+    const wordsPerMinute = lang === 'zh' ? 400 : 200;
+    const words = content.replace(/[#*`_\[\]]/g, '').length;
+    const minutes = Math.ceil(words / wordsPerMinute);
+    return lang === 'zh' ? `${minutes} 分钟` : `${minutes} min read`;
 }
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string; lang: Locale }> }) {
@@ -38,64 +45,103 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     const { enUS, zhCN } = require('date-fns/locale');
     const localeMap: Record<string, any> = { 'en': enUS, 'zh': zhCN };
     const dateLocale = localeMap[lang] || enUS;
+    
+    const readingTime = getReadingTime(post.content || '', lang);
 
     return (
-        <div className="min-h-screen bg-background pb-32">
-            {/* Editorial Header */}
-            <div className="w-full pt-12 pb-12 md:pt-16 md:pb-20 container mx-auto px-6">
-                <div className="max-w-6xl mx-auto space-y-8">
-                    <Button variant="ghost" asChild className="pl-0 -ml-2 text-muted-foreground hover:text-primary transition-colors">
-                        <Link href={`/${lang}`}>
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            {dict.common.back_home}
-                        </Link>
-                    </Button>
+        <div className="min-h-screen pb-24">
+            {/* 文章头部 */}
+            <header className="pt-8 pb-12 md:pt-12 md:pb-16">
+                <div className="container mx-auto px-6">
+                    <div className="max-w-7xl mx-auto">
+                        {/* 返回按钮 */}
+                        <Button 
+                            variant="ghost" 
+                            asChild 
+                            className="mb-8 -ml-3 text-muted-foreground hover:text-foreground"
+                        >
+                            <Link href={`/${lang}`}>
+                                <ArrowLeft className="mr-2 h-4 w-4" />
+                                {dict.common.back_home}
+                            </Link>
+                        </Button>
 
-                    <div className="space-y-6">
-                        <div className="flex items-center gap-3 text-sm font-bold text-primary tracking-widest uppercase">
-                            <span className="w-8 h-px bg-primary"></span>
-                            {lang === 'zh' ? '博文' : 'Article'}
-                        </div>
-                        <h1 className="text-4xl md:text-7xl font-serif font-black tracking-tight leading-[1.15]">
-                            {post.title}
-                        </h1>
-
-                        <div className="flex flex-wrap items-center gap-6 pt-4 text-muted-foreground border-t border-foreground/5 mt-8">
-                            <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold border border-primary/20">
-                                    {post.author?.charAt(0).toUpperCase() || 'A'}
-                                </div>
-                                <span className="font-bold text-foreground">{post.author || 'Anonymous'}</span>
+                        {/* 内容区域 - 与文章主体对齐，排除侧边栏宽度 */}
+                        <div className="lg:pr-[calc(14rem+2rem)] xl:pr-[calc(16rem+3rem)]">
+                            {/* 文章标签 */}
+                            <div className="flex items-center gap-2 text-xs font-semibold text-primary tracking-widest uppercase mb-6">
+                                <span className="w-6 h-px bg-primary" />
+                                {lang === 'zh' ? '博文' : 'Article'}
                             </div>
-                            <span className="text-foreground/10">|</span>
-                            <time dateTime={post.date} className="text-sm font-medium">
-                                {formatDistance(new Date(post.date), new Date(), { addSuffix: true, locale: dateLocale })}
-                            </time>
+
+                            {/* 标题 */}
+                            <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-black tracking-tight leading-[1.15] mb-8">
+                                {post.title}
+                            </h1>
+
+                            {/* 元信息 */}
+                            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground pb-8 border-b border-border/50">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+                                        {post.author?.charAt(0).toUpperCase() || 'A'}
+                                    </div>
+                                    <span className="font-medium text-foreground">{post.author || 'Anonymous'}</span>
+                                </div>
+                                
+                                <div className="flex items-center gap-2">
+                                    <Calendar className="w-4 h-4" />
+                                    <time dateTime={post.date}>
+                                        {format(new Date(post.date), 'MMM d, yyyy', { locale: dateLocale })}
+                                    </time>
+                                </div>
+                                
+                                <div className="flex items-center gap-2">
+                                    <Clock className="w-4 h-4" />
+                                    <span>{readingTime}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </header>
 
-            {/* Optimized Content Area */}
+            {/* 文章内容 */}
             <main className="container mx-auto px-6">
-                <div className="flex flex-col lg:flex-row gap-16 max-w-7xl mx-auto">
-                    {/* Main Article Content */}
-                    <article className="flex-1 min-w-0 prose prose-lg dark:prose-invert max-w-6xl mx-auto
+                <div className="flex gap-8 lg:gap-12 max-w-7xl mx-auto">
+                    {/* 主内容 - 考虑侧边栏目录宽度 */}
+                    <article className="flex-1 min-w-0 prose prose-lg dark:prose-invert
                         prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight 
-                        prose-p:text-foreground/80 prose-p:leading-8 prose-p:my-8
-                        prose-blockquote:italic prose-blockquote:border-l-4 prose-blockquote:border-primary/30 
-                        prose-img:rounded-3xl prose-img:shadow-2xl
-                        prose-pre:bg-muted/30 prose-pre:border-none prose-pre:p-0 prose-pre:overflow-hidden
+                        prose-p:text-foreground/80 prose-p:leading-8
+                        prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                        prose-blockquote:border-primary/30 prose-blockquote:bg-muted/30
+                        prose-pre:bg-[#0d1117] prose-pre:border-0
+                        prose-img:rounded-xl prose-img:shadow-lg
                     ">
                         <MDXContent source={post.content || ''} dict={dict} />
                     </article>
 
-                    {/* Sidebar - TOC Plugin Slot */}
-                    <aside className="hidden xl:block w-72 sticky top-24 self-start">
-                        <PluginSlot name="post-sidebar" />
+                    {/* 侧边栏 - TOC 目录插件 */}
+                    <aside className="hidden lg:block w-56 xl:w-64 shrink-0">
+                        <div className="sticky top-24">
+                            <PluginSlot name="post-sidebar" />
+                        </div>
                     </aside>
                 </div>
             </main>
+
+            {/* 文章底部 */}
+            <footer className="container mx-auto px-6 mt-16">
+                <div className="max-w-7xl mx-auto pt-8 border-t border-border/50">
+                    <div className="flex items-center justify-between">
+                        <Button variant="ghost" asChild className="-ml-3">
+                            <Link href={`/${lang}`}>
+                                <ArrowLeft className="mr-2 h-4 w-4" />
+                                {lang === 'zh' ? '返回首页' : 'Back to Home'}
+                            </Link>
+                        </Button>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 }

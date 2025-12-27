@@ -17,36 +17,45 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: Lo
     }
 
     return (
-        <div className="min-h-screen bg-background pb-32">
-            {/* Editorial Header */}
-            <div className="w-full pt-16 pb-20 md:pt-24 md:pb-32 container mx-auto px-6">
-                <div className="max-w-6xl mx-auto space-y-8 text-center md:text-left">
-                    <Button variant="ghost" asChild className="pl-0 -ml-2 text-muted-foreground hover:text-primary transition-colors">
-                        <Link href={`/${lang}`}>
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            {dict.common.back_home}
-                        </Link>
-                    </Button>
+        <div className="min-h-screen pb-24">
+            {/* 页面头部 */}
+            <header className="pt-8 pb-12 md:pt-12 md:pb-16">
+                <div className="container mx-auto px-6">
+                    <div className="max-w-7xl mx-auto">
+                        {/* 返回按钮 */}
+                        <Button 
+                            variant="ghost" 
+                            asChild 
+                            className="mb-8 -ml-3 text-muted-foreground hover:text-foreground"
+                        >
+                            <Link href={`/${lang}`}>
+                                <ArrowLeft className="mr-2 h-4 w-4" />
+                                {dict.common.back_home}
+                            </Link>
+                        </Button>
 
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-center md:justify-start gap-3 text-sm font-bold text-primary tracking-widest uppercase">
-                            <span className="w-8 h-px bg-primary"></span>
+                        {/* 页面标签 */}
+                        <div className="flex items-center gap-2 text-xs font-semibold text-primary tracking-widest uppercase mb-6">
+                            <span className="w-6 h-px bg-primary" />
                             {dict.navbar.about}
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-serif font-black tracking-tight leading-[1.1]">
+
+                        {/* 标题 */}
+                        <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-black tracking-tight leading-[1.15]">
                             {page.title}
                         </h1>
                     </div>
                 </div>
-            </div>
+            </header>
 
-            {/* Content Area */}
+            {/* 内容区域 */}
             <main className="container mx-auto px-6">
-                <div className="max-w-6xl mx-auto">
-                    <article className="prose prose-lg dark:prose-invert max-w-none
+                <div className="max-w-7xl mx-auto">
+                    <article className="prose prose-lg dark:prose-invert
                         prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight 
-                        prose-p:text-foreground/80 prose-p:leading-8 prose-p:my-8
-                        prose-blockquote:italic prose-blockquote:border-l-4 prose-blockquote:border-primary/30 
+                        prose-p:text-foreground/80 prose-p:leading-8
+                        prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                        prose-blockquote:border-primary/30 prose-blockquote:bg-muted/30
                     ">
                         <MDXContent source={page.content || ''} dict={dict} />
                     </article>

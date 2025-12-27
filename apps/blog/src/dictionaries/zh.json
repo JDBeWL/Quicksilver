@@ -9,8 +9,8 @@
         "logout": "退出登录"
     },
     "home": {
-        "hero_title": "Powered by Quicksilver Core",
-        "hero_desc": "灵感，塑你所想。",
+        "hero_title": "Mercury's Blog",
+        "hero_desc": "想得太多连傻X都会当不成的吧",
         "read_more": "阅读更多",
         "no_posts": "暂无文章。成为第一个写文章的人！"
     },

@@ -1,9 +1,8 @@
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '../../components/ui/card';
 import { formatDistance } from 'date-fns';
 import { getDictionary } from '../../get-dictionary';
 import { Locale } from '../../i18n-config';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Calendar, User } from 'lucide-react';
 import { getAllPosts } from '@quicksilver/content-core';
 
 export async function generateStaticParams() {
@@ -17,117 +16,142 @@ export default async function Home({ params }: { params: Promise<{ lang: Locale 
     const dict = await getDictionary(lang);
 
     const allPosts = getAllPosts().filter((p: any) => p.published);
-    const featuredPost = allPosts[0];
-    const otherPosts = allPosts.slice(1);
+    
+    // 精选文章：通过 frontmatter 中的 pinned/featured 字段决定
+    const featuredPost = allPosts.find((p: any) => p.pinned || p.featured);
 
     // Date locale handling
     const { enUS, zhCN } = require('date-fns/locale');
     const localeMap: Record<string, any> = { 'en': enUS, 'zh': zhCN };
     const dateLocale = localeMap[lang] || enUS;
 
+    // 提取文章摘要
+    const getExcerpt = (content: string, maxLength = 120) => {
+        const text = content?.replace(/[#*`_\[\]]/g, '').replace(/\n+/g, ' ').trim() || '';
+        return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+    };
+
     return (
-        <div className="pb-24">
-            {/* Hero & Featured Section */}
-            <section className="relative pt-16 pb-20 md:pt-24 md:pb-32 overflow-hidden">
-                <div className="container mx-auto px-6 relative z-10">
-                    <div className="max-w-6xl mx-auto text-center mb-16 md:mb-24 space-y-6">
-                        <h1 className="text-5xl md:text-7xl font-serif font-black tracking-tighter leading-[1.1] animate-in fade-in slide-in-from-bottom-8 duration-1000">
+        <div className="min-h-screen">
+            {/* Hero Section */}
+            <section className="relative pt-20 pb-16 md:pt-32 md:pb-24">
+                <div className="container mx-auto px-6">
+                    <div className="max-w-3xl mx-auto text-center space-y-6">
+                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-black tracking-tight leading-[1.1] animate-fade-up">
                             {dict.home.hero_title}
                         </h1>
-                        <p className="text-lg md:text-xl text-muted-foreground/90 max-w-2xl mx-auto leading-relaxed font-light animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
+                        <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed animate-fade-up delay-100">
                             {dict.home.hero_desc}
                         </p>
                     </div>
-
-                    {featuredPost && (
-                        <div className="group relative rounded-3xl overflow-hidden border border-foreground/5 bg-card/50 shadow-2xl transition-all duration-500 hover:shadow-primary/5 hover:-translate-y-1">
-                            <Link href={`/${lang}/posts/${featuredPost.slug}`} className="flex flex-col lg:flex-row min-h-[400px]">
-                                <div className="flex-1 p-8 md:p-12 flex flex-col justify-center space-y-6">
-                                    <div className="flex items-center gap-3 text-sm font-semibold text-primary tracking-widest uppercase">
-                                        <span className="w-8 h-px bg-primary"></span>
-                                        {lang === 'zh' ? '精选文章' : 'Featured Post'}
-                                    </div>
-                                    <h2 className="text-3xl md:text-4xl font-serif font-bold leading-tight group-hover:text-primary transition-colors">
-                                        {featuredPost.title}
-                                    </h2>
-                                    <p className="text-muted-foreground line-clamp-3 leading-relaxed max-w-xl">
-                                        {featuredPost.content?.replace(/[#*`_]/g, '') || 'No content provided.'}
-                                    </p>
-                                    <div className="flex items-center gap-4 pt-4">
-                                        <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold border border-primary/20">
-                                            {featuredPost.author?.charAt(0).toUpperCase() || 'A'}
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-bold">{featuredPost.author || 'Anonymous'}</span>
-                                            <time className="text-xs text-muted-foreground">
-                                                {formatDistance(new Date(featuredPost.date), new Date(), { addSuffix: true, locale: dateLocale })}
-                                            </time>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="lg:w-1/3 bg-muted/30 border-l border-foreground/5 flex items-center justify-center p-12 overflow-hidden">
-                                    <ArrowRight className="w-24 h-24 text-primary/10 -rotate-45 group-hover:rotate-0 group-hover:text-primary/20 transition-all duration-700 scale-150" />
-                                </div>
-                            </Link>
-                        </div>
-                    )}
                 </div>
             </section>
 
-            <div className="container mx-auto px-6">
-                {/* Posts Grid */}
-                <section className="space-y-12">
-                    <div className="flex items-end justify-between border-b border-foreground/5 pb-6">
-                        <h2 className="text-3xl font-serif font-bold tracking-tight">
-                            {lang === 'zh' ? '最近发布' : 'Latest Articles'}
-                        </h2>
-                        <span className="text-sm text-muted-foreground font-medium hidden md:block">
-                            {allPosts.length} {lang === 'zh' ? '篇文章' : 'Posts found'}
-                        </span>
-                    </div>
+            {/* Featured Post - 仅当有 pinned/featured 文章时显示 */}
+            {featuredPost && (
+                <section className="container mx-auto px-6 pb-16">
+                    <Link 
+                        href={`/${lang}/posts/${featuredPost.slug}`} 
+                        className="group block relative overflow-hidden rounded-2xl bg-card border border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-xl hover:shadow-primary/5"
+                    >
+                        <div className="p-8 md:p-12 lg:p-16">
+                            <div className="flex items-center gap-2 text-xs font-semibold text-primary tracking-widest uppercase mb-6">
+                                <span className="w-6 h-px bg-primary" />
+                                {lang === 'zh' ? '精选文章' : 'Featured'}
+                            </div>
+                            
+                            <h2 className="text-2xl md:text-4xl font-serif font-bold leading-tight mb-4 group-hover:text-primary transition-colors duration-300">
+                                {featuredPost.title}
+                            </h2>
+                            
+                            <p className="text-muted-foreground leading-relaxed mb-8 line-clamp-2 max-w-3xl">
+                                {getExcerpt(featuredPost.content, 160)}
+                            </p>
+                            
+                            <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                                <div className="flex items-center gap-2">
+                                    <User className="w-4 h-4" />
+                                    <span className="font-medium">{featuredPost.author || 'Anonymous'}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Calendar className="w-4 h-4" />
+                                    <time>{formatDistance(new Date(featuredPost.date), new Date(), { addSuffix: true, locale: dateLocale })}</time>
+                                </div>
+                            </div>
+                        </div>
+                    </Link>
+                </section>
+            )}
 
-                    <div className="grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
-                        {(featuredPost ? otherPosts : allPosts).map((post: any) => (
-                            <article key={post.slug} className="group flex flex-col space-y-4">
-                                <Link href={`/${lang}/posts/${post.slug}`} className="block relative aspect-[16/10] bg-muted/30 rounded-2xl overflow-hidden border border-foreground/5 group-hover:border-primary/20 transition-all mb-2">
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-primary/5 backdrop-blur-[2px]">
-                                        <ArrowRight className="w-8 h-8 text-primary" />
-                                    </div>
-                                </Link>
-                                <div className="space-y-3">
-                                    <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground tracking-wider uppercase">
-                                        <time dateTime={post.date}>
+            {/* All Posts Grid */}
+            <section className="container mx-auto px-6 pb-24">
+                <div className="flex items-center justify-between mb-12">
+                    <h2 className="text-2xl md:text-3xl font-serif font-bold">
+                        {lang === 'zh' ? '全部文章' : 'All Posts'}
+                    </h2>
+                    <span className="text-sm text-muted-foreground">
+                        {allPosts.length} {lang === 'zh' ? '篇' : 'posts'}
+                    </span>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {allPosts.map((post: any, index: number) => (
+                        <article 
+                            key={post.slug} 
+                            className="group article-card h-full"
+                            style={{ animationDelay: `${index * 100}ms` }}
+                        >
+                            <Link 
+                                href={`/${lang}/posts/${post.slug}`} 
+                                className="flex flex-col h-full p-6 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300"
+                            >
+                                {/* 文章信息 */}
+                                <div className="flex flex-col flex-1 space-y-3">
+                                    <div className="flex items-center gap-2">
+                                        <time className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                             {formatDistance(new Date(post.date), new Date(), { addSuffix: true, locale: dateLocale })}
                                         </time>
+                                        {(post.pinned || post.featured) && (
+                                            <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded">
+                                                {lang === 'zh' ? '精选' : 'Featured'}
+                                            </span>
+                                        )}
                                     </div>
-                                    <h3 className="text-xl font-serif font-bold leading-tight group-hover:text-primary transition-colors line-clamp-2">
-                                        <Link href={`/${lang}/posts/${post.slug}`}>
-                                            {post.title}
-                                        </Link>
+                                    
+                                    <h3 className="text-lg font-serif font-bold leading-snug group-hover:text-primary transition-colors line-clamp-2">
+                                        {post.title}
                                     </h3>
-                                    <p className="line-clamp-2 text-muted-foreground/80 text-sm leading-relaxed">
-                                        {post.content?.replace(/[#*`_]/g, '') || 'No content provided.'}
+                                    
+                                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 flex-1">
+                                        {getExcerpt(post.content)}
                                     </p>
-                                    <div className="flex items-center gap-2 pt-2">
-                                        <span className="text-xs font-bold border-b border-primary/30">
+                                    
+                                    <div className="flex items-center gap-2 pt-2 mt-auto">
+                                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
+                                            {post.author?.charAt(0).toUpperCase() || 'A'}
+                                        </div>
+                                        <span className="text-xs font-medium text-muted-foreground">
                                             {post.author || 'Anonymous'}
                                         </span>
                                     </div>
                                 </div>
-                            </article>
-                        ))}
+                            </Link>
+                        </article>
+                    ))}
+                </div>
 
-                        {allPosts.length === 0 && (
-                            <div className="col-span-full flex flex-col items-center justify-center py-32 text-center bg-card/50 rounded-3xl border border-dashed border-foreground/10">
-                                <h3 className="text-xl font-serif font-medium text-foreground">{dict.home.no_posts}</h3>
-                                <p className="text-muted-foreground mt-2">
-                                    {lang === 'zh' ? '这里还没有文章，请稍后查看。' : 'No articles yet. Please check back later.'}
-                                </p>
-                            </div>
-                        )}
+                {allPosts.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-24 text-center">
+                        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-6">
+                            <span className="text-2xl">📝</span>
+                        </div>
+                        <h3 className="text-xl font-serif font-medium mb-2">{dict.home.no_posts}</h3>
+                        <p className="text-muted-foreground">
+                            {lang === 'zh' ? '这里还没有文章，请稍后查看。' : 'No articles yet. Please check back later.'}
+                        </p>
                     </div>
-                </section>
-            </div>
+                )}
+            </section>
         </div>
     );
 }

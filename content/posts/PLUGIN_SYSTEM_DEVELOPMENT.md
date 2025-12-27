@@ -3,6 +3,7 @@ title: Quicksilver 插件系统开发文档
 published: true
 date: '2025-12-18T03:49:18.251Z'
 author: Mer6ury
+pinned: true
 ---
 
 # Quicksilver 插件系统开发文档

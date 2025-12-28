@@ -90,6 +90,7 @@ next-env.d.ts
 # ===================
 content/posts/*
 content/pages/*
+content/site-settings.json
 !content/posts/.gitkeep
 !content/pages/.gitkeep
 

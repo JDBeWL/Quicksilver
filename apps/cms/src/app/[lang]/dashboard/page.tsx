@@ -3,38 +3,76 @@ import { getAllPosts } from '@quicksilver/content-core';
 import { getSafeSession } from '@/lib/auth-wrapper';
 import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, FileText } from 'lucide-react';
+import { Plus, Edit, FileText, Settings } from 'lucide-react';
 import DeletePostButton from '@/components/DeletePostButton';
 import TogglePublishButton from '@/components/TogglePublishButton';
+import PostsFilter from '@/components/PostsFilter';
 import { getDictionary } from '@/get-dictionary';
 import { Locale } from '@/i18n-config';
 
 // Force SSR for dashboard
 export const dynamic = 'force-dynamic';
 
-export default async function DashboardPage({ params }: { params: Promise<{ lang: Locale }> }) {
+interface PageProps {
+    params: Promise<{ lang: Locale }>;
+    searchParams: Promise<{ q?: string; status?: string }>;
+}
+
+export default async function DashboardPage({ params, searchParams }: PageProps) {
     const { lang } = await params;
+    const { q, status } = await searchParams;
     const dict = await getDictionary(lang);
     const session = await getSafeSession();
     if (!session?.user?.id) {
         redirect(`/${lang}/login`);
     }
 
-    const posts = getAllPosts();
+    let posts = getAllPosts();
+    const totalCount = posts.length;
     const publishedCount = posts.filter(p => p.published).length;
     const draftCount = posts.filter(p => !p.published).length;
+
+    // Apply filters
+    if (q) {
+        const query = q.toLowerCase();
+        posts = posts.filter(p => 
+            p.title.toLowerCase().includes(query) || 
+            p.slug.toLowerCase().includes(query)
+        );
+    }
+    if (status === 'published') {
+        posts = posts.filter(p => p.published);
+    } else if (status === 'draft') {
+        posts = posts.filter(p => !p.published);
+    }
+
+    const filterDict = {
+        search_placeholder: dict.dashboard.filter?.search_placeholder,
+        all: dict.dashboard.filter?.all,
+        published: dict.dashboard.status.published,
+        draft: dict.dashboard.status.draft,
+        clear: dict.dashboard.filter?.clear,
+    };
 
     return (
         <div className="py-6 w-full px-6 lg:px-10">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-bold">{dict.navbar.dashboard}</h1>
-                <Button asChild size="sm">
-                    <Link href={`/${lang}/dashboard/create`}>
-                        <Plus className="h-4 w-4 mr-1" />
-                        {dict.navbar.write}
-                    </Link>
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" asChild>
+                        <Link href={`/${lang}/dashboard/settings`}>
+                            <Settings className="h-4 w-4 mr-1" />
+                            {dict.dashboard.settings?.title || '设置'}
+                        </Link>
+                    </Button>
+                    <Button asChild size="sm">
+                        <Link href={`/${lang}/dashboard/create`}>
+                            <Plus className="h-4 w-4 mr-1" />
+                            {dict.navbar.write}
+                        </Link>
+                    </Button>
+                </div>
             </div>
 
             {/* Main Content - Side by Side Layout */}
@@ -45,7 +83,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ lang
                         <h2 className="text-sm font-medium text-muted-foreground">{dict.dashboard.stats.total_posts}</h2>
                         <div className="space-y-3">
                             <div className="flex items-baseline gap-1">
-                                <span className="text-3xl font-bold">{posts.length}</span>
+                                <span className="text-3xl font-bold">{totalCount}</span>
                                 <span className="text-sm text-muted-foreground">篇文章</span>
                             </div>
                             <div className="h-px bg-border" />
@@ -69,11 +107,13 @@ export default async function DashboardPage({ params }: { params: Promise<{ lang
 
                 {/* Right Content - Posts Table */}
                 <div className="flex-1 min-w-0">
+                    <PostsFilter dict={filterDict} />
+                    
                     {posts.length === 0 ? (
                         <div className="border border-dashed rounded-lg py-16 text-center text-muted-foreground">
                             <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
-                            <h3 className="font-medium">{dict.dashboard.empty.title}</h3>
-                            <p className="text-sm">{dict.dashboard.empty.desc}</p>
+                            <h3 className="font-medium">{q || status ? (dict.dashboard.filter?.no_results || '没有匹配的文章') : dict.dashboard.empty.title}</h3>
+                            <p className="text-sm">{q || status ? '' : dict.dashboard.empty.desc}</p>
                         </div>
                     ) : (
                         <div className="border rounded-lg overflow-hidden">

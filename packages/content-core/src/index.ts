@@ -168,3 +168,67 @@ export function checkPageExists(slug: string): boolean {
     const fullPath = path.join(pagesDirectory, `${slug}.md`);
     return fs.existsSync(fullPath);
 }
+
+// Site Settings
+export interface SiteSettings {
+    title: string;
+    subtitle: {
+        zh: string;
+        en: string;
+    };
+    description: {
+        zh: string;
+        en: string;
+    };
+    logo: string;
+    favicon: string;
+    author: string;
+    language: string;
+    footer: string;
+}
+
+const defaultSettings: SiteSettings = {
+    title: 'Quicksilver',
+    subtitle: {
+        zh: '灵感，塑你所想',
+        en: 'Shape your story, your way.',
+    },
+    description: {
+        zh: '由 Quicksilver Core 驱动的博客',
+        en: 'A blog powered by Quicksilver Core',
+    },
+    logo: '',
+    favicon: '',
+    author: '',
+    language: 'zh',
+    footer: 'Powered by Quicksilver Core',
+};
+
+export function getSiteSettings(): SiteSettings {
+    if (!isServer || !fs || !path) return defaultSettings;
+    
+    try {
+        const possiblePaths = [
+            path.join(process.cwd(), 'content', 'site-settings.json'),
+            path.join(process.cwd(), '..', 'content', 'site-settings.json'),
+            path.join(process.cwd(), '..', '..', 'content', 'site-settings.json'),
+        ];
+
+        for (const settingsPath of possiblePaths) {
+            if (fs.existsSync(settingsPath)) {
+                const data = fs.readFileSync(settingsPath, 'utf-8');
+                const parsed = JSON.parse(data);
+                // Merge with defaults to ensure all fields exist
+                return {
+                    ...defaultSettings,
+                    ...parsed,
+                    subtitle: { ...defaultSettings.subtitle, ...(parsed.subtitle || {}) },
+                    description: { ...defaultSettings.description, ...(parsed.description || {}) },
+                };
+            }
+        }
+    } catch (error) {
+        console.error('Failed to read site settings:', error);
+    }
+    return defaultSettings;
+}

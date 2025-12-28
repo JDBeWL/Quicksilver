@@ -2,21 +2,25 @@ import Link from 'next/link';
 import { getDictionary } from '../get-dictionary';
 import { Locale } from '../i18n-config';
 import { PluginSlot } from './PluginSlot';
-import { checkPageExists } from '@quicksilver/content-core';
+import { checkPageExists, getSiteSettings } from '@quicksilver/content-core';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeToggle } from './ThemeToggle';
 
 export default async function Navbar({ lang }: { lang: Locale }) {
     const dict = await getDictionary(lang);
     const hasAboutPage = checkPageExists('about');
+    const siteSettings = getSiteSettings();
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl backdrop-saturate-150">
             <div className="container mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2">
                 {/* 左侧品牌 */}
                 <Link href={`/${lang}`} className="flex items-center gap-2 group shrink-0">
+                    {siteSettings.logo && (
+                        <img src={siteSettings.logo} alt={siteSettings.title} className="h-6 sm:h-7 w-auto" />
+                    )}
                     <span className="text-lg sm:text-xl font-serif font-black tracking-tight group-hover:text-primary transition-colors duration-300">
-                        {dict.navbar.brand}
+                        {siteSettings.title || dict.navbar.brand}
                     </span>
                 </Link>
 

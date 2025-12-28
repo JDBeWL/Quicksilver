@@ -119,6 +119,30 @@
             "date": "日期",
             "status": "状态",
             "actions": "操作"
+        },
+        "filter": {
+            "search_placeholder": "搜索文章...",
+            "all": "全部",
+            "clear": "清除",
+            "no_results": "没有匹配的文章"
+        },
+        "settings": {
+            "title": "站点设置",
+            "description": "配置站点基本信息",
+            "basic": "基本信息",
+            "i18n_content": "多语言内容",
+            "appearance": "外观",
+            "site_title": "站点标题",
+            "subtitle": "副标题",
+            "site_description": "描述",
+            "author": "作者",
+            "logo_url": "Logo URL",
+            "favicon_url": "Favicon URL",
+            "footer_text": "页脚文字",
+            "default_language": "默认语言",
+            "save": "保存设置",
+            "save_success": "保存成功",
+            "save_error": "保存失败"
         }
     },
     "about": {

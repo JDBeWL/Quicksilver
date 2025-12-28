@@ -3,7 +3,7 @@ import { formatDistance } from 'date-fns';
 import { getDictionary } from '../../get-dictionary';
 import { Locale } from '../../i18n-config';
 import { ArrowRight, Calendar, User } from 'lucide-react';
-import { getAllPosts } from '@quicksilver/content-core';
+import { getAllPosts, getSiteSettings } from '@quicksilver/content-core';
 
 export async function generateStaticParams() {
     return [{ lang: 'en' }, { lang: 'zh' }];
@@ -14,6 +14,7 @@ export const dynamicParams = false;
 export default async function Home({ params }: { params: Promise<{ lang: Locale }> }) {
     const { lang } = await params;
     const dict = await getDictionary(lang);
+    const siteSettings = getSiteSettings();
 
     const allPosts = getAllPosts().filter((p: any) => p.published);
     
@@ -38,10 +39,10 @@ export default async function Home({ params }: { params: Promise<{ lang: Locale 
                 <div className="container mx-auto px-6">
                     <div className="max-w-3xl mx-auto text-center space-y-6">
                         <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-black tracking-tight leading-[1.1] animate-fade-up">
-                            {dict.home.hero_title}
+                            {siteSettings.subtitle[lang] || dict.home.hero_title}
                         </h1>
-                        <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed animate-fade-up delay-100">
-                            {dict.home.hero_desc}
+                        <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed animate-fade-up delay-100 whitespace-pre-line">
+                            {siteSettings.description[lang] || dict.home.hero_desc}
                         </p>
                     </div>
                 </div>

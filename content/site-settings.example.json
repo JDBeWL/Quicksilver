@@ -1,0 +1,16 @@
+{
+  "title": "Quicksilver",
+  "subtitle": {
+    "zh": "灵感，塑你所想",
+    "en": "Shape your story, your way."
+  },
+  "description": {
+    "zh": "由 Quicksilver Core 驱动的博客",
+    "en": "A blog powered by Quicksilver Core"
+  },
+  "logo": "",
+  "favicon": "",
+  "author": "",
+  "language": "zh",
+  "footer": "Powered by Quicksilver Core"
+}

@@ -119,6 +119,30 @@
             "date": "Date",
             "status": "Status",
             "actions": "Actions"
+        },
+        "filter": {
+            "search_placeholder": "Search posts...",
+            "all": "All",
+            "clear": "Clear",
+            "no_results": "No matching posts"
+        },
+        "settings": {
+            "title": "Site Settings",
+            "description": "Configure your site information",
+            "basic": "Basic Info",
+            "i18n_content": "Multilingual Content",
+            "appearance": "Appearance",
+            "site_title": "Site Title",
+            "subtitle": "Subtitle",
+            "site_description": "Description",
+            "author": "Author",
+            "logo_url": "Logo URL",
+            "favicon_url": "Favicon URL",
+            "footer_text": "Footer Text",
+            "default_language": "Default Language",
+            "save": "Save Settings",
+            "save_success": "Settings saved successfully",
+            "save_error": "Failed to save settings"
         }
     },
     "about": {

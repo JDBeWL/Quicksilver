@@ -96,3 +96,38 @@ export async function DELETE(
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
+
+export async function PATCH(
+    request: Request,
+    { params }: { params: Promise<{ slug: string }> }
+) {
+    const securityError = await validateApiRequest(request);
+    if (securityError) return securityError;
+
+    try {
+        const session = await getSafeSession();
+        if (!session) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const { slug } = await params;
+        const body = await request.json();
+
+        const existingPost = getPostBySlug(slug);
+        if (!existingPost) {
+            return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+        }
+
+        const updatedPost = {
+            ...existingPost,
+            published: body.published !== undefined ? body.published : existingPost.published,
+        };
+
+        savePost(updatedPost);
+
+        return NextResponse.json({ post: updatedPost });
+    } catch (error) {
+        console.error('Patch post error:', error);
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    }
+}

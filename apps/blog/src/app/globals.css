@@ -193,6 +193,20 @@
   @apply rounded-xl border border-border/50 shadow-sm my-8 overflow-hidden;
 }
 
+.prose pre > div {
+  @apply overflow-x-auto;
+}
+
+/* 代码块横向滚动优化 */
+pre {
+  @apply overflow-x-auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+pre code {
+  @apply block min-w-max;
+}
+
 .prose code:not(pre code) {
   @apply bg-muted/60 px-1.5 py-0.5 rounded text-sm font-mono text-primary;
 }

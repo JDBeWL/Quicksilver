@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Navbar from "@/components/Navbar";
-import { PluginProvider } from "@/lib/plugins";
-import { PluginSlot } from "@/components/PluginSlot";
 import "../globals.css";
 import { i18n, type Locale } from "@/i18n-config";
 
@@ -50,13 +48,10 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        <PluginProvider>
-          <Navbar lang={lang as Locale} />
-          <main className="container mx-auto flex-1 flex flex-col">
-            {children}
-          </main>
-          <PluginSlot name="footer-main" />
-        </PluginProvider>
+        <Navbar lang={lang as Locale} />
+        <main className="flex-1 flex flex-col px-4">
+          {children}
+        </main>
       </body>
     </html>
   );

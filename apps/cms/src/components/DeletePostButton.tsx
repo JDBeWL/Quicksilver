@@ -26,8 +26,8 @@ export default function DeletePostButton({ postId }: { postId: string }) {
     }
 
     return (
-        <Button variant="destructive" size="sm" onClick={handleDelete} disabled={isDeleting}>
-            {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+        <Button variant="ghost" size="icon" onClick={handleDelete} disabled={isDeleting} className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10">
+            {isDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
         </Button>
     );
 }

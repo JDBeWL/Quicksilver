@@ -52,10 +52,10 @@ export default function MarkdownCodeBlock({ language, code, className }: Markdow
                 language={language as any}
             >
                 {({ className: prismClassName, style, tokens, getLineProps, getTokenProps }) => (
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
                         <pre 
                             className={cn(
-                                "font-mono text-[13px] leading-relaxed p-5 m-0 min-w-full",
+                                "font-mono text-[13px] leading-relaxed p-5 m-0",
                                 prismClassName
                             )} 
                             style={{
@@ -67,13 +67,14 @@ export default function MarkdownCodeBlock({ language, code, className }: Markdow
                                 boxShadow: 'none',
                                 border: 'none',
                                 outline: 'none',
-                                background: 'transparent'
+                                background: 'transparent',
+                                minWidth: 'max-content'
                             }}
                         >
                             {tokens.map((line, i) => (
-                                <div key={i} {...getLineProps({ line, className: "flex min-w-full" })}>
+                                <div key={i} {...getLineProps({ line, className: "flex whitespace-pre" })}>
                                     <span className="shrink-0 select-none pr-6 text-white/20 text-right w-12 text-xs">{i + 1}</span>
-                                    <span className="flex-1">
+                                    <span className="flex-1 whitespace-pre">
                                         {line.map((token, key) => (
                                             <span key={key} {...getTokenProps({ token })} />
                                         ))}

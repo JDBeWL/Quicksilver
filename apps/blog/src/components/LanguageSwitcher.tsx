@@ -80,12 +80,12 @@ export function LanguageSwitcher({
       <div className={`relative ${className}`} ref={dropdownRef}>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/50 transition-colors"
+          className="flex items-center gap-1 sm:gap-2 p-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/50 transition-colors"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
         >
           <Globe className="w-4 h-4" />
-          <span>{currentLanguage.flag}</span>
+          <span className="hidden sm:inline">{currentLanguage.flag}</span>
           <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
         </button>
         

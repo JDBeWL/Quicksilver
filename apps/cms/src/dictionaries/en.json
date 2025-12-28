@@ -112,6 +112,13 @@
         "status": {
             "published": "Published",
             "draft": "Draft"
+        },
+        "table": {
+            "title": "Title",
+            "slug": "Slug",
+            "date": "Date",
+            "status": "Status",
+            "actions": "Actions"
         }
     },
     "about": {

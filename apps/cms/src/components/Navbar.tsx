@@ -7,7 +7,6 @@ import { LogOut, User, PenTool } from 'lucide-react';
 import LogoutButton from '@/components/LogoutButton'; // Client component for logout action
 import { getDictionary } from '@/get-dictionary';
 import { Locale } from '@/i18n-config';
-import { PluginSlot } from '@/components/PluginSlot';
 
 // Force dynamic rendering for navbar due to auth session usage
 export const dynamic = 'force-dynamic';
@@ -23,7 +22,6 @@ export default async function Navbar({ lang }: { lang: Locale }) {
                     <span className="text-foreground">{dict.navbar.brand}</span>
                 </Link>
                 <nav className="flex items-center space-x-6">
-                    <PluginSlot name="navbar-end" />
                     <Link href={`/${lang}/about`} className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
                         {dict.navbar.about}
                     </Link>

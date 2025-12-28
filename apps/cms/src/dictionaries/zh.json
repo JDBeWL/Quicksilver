@@ -112,6 +112,13 @@
         "status": {
             "published": "已发布",
             "draft": "草稿"
+        },
+        "table": {
+            "title": "标题",
+            "slug": "别名",
+            "date": "日期",
+            "status": "状态",
+            "actions": "操作"
         }
     },
     "about": {

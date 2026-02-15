@@ -64,10 +64,8 @@
     "eslint-config-next": "16.0.8",
     "pg": "^8.16.3",
     "prisma": "^5.14.0",
-    "sqlite3": "^5.1.7",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }
-
